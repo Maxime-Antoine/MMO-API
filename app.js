@@ -15,6 +15,8 @@
 		var pwd = req.body.pwd;
 		var resContent = {};
 		
+		console.log('Login request for ' + login + ' - ' + pwd);
+		
 		if (login === "Max" && pwd === "123"){
 			resContent.result = 'OK';
 			resContent.playerId = 'eWRhpRV';
