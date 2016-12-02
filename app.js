@@ -20,8 +20,6 @@
 		var pwd = req.body.pwd;
 		var resContent = {};
 		
-		console.log('Login request for ' + login + ' - ' + pwd);
-		
 		var player = null;
 		accounts.forEach(function(a){
 			if (a.login == login && a.pwd == pwd)
@@ -29,11 +27,13 @@
 		})
 		
 		if (player){
+			console.log('Login request for ' + login + ' - ' + pwd + ' succeeded');
 			resContent.result = 'OK';
 			resContent.playerId = player.playerId;
 			resContent.playerName = player.login;
 		}
 		else {
+			console.log('Login request for ' + login + ' - ' + pwd + 'failed');
 			resContent.result = 'NOK';
 			resContent.reason = 'Incorrect credentials';
 		}
@@ -44,6 +44,8 @@
 		var result = {};
 		result.names = [];
 		
+		console.log('Usernames requested');
+		
 		accounts.forEach(function(a){
 			result.names.push(a.login);
 		});
@@ -51,11 +53,13 @@
 		res.json(result);
 	})
 	
-	app.post('/signup', function(req, res){
+	app.post('/signup', function(req, res){		
 		var login = req.body.login;
 		var pwd = req.body.pwd;
 		var email = req.body.email;
 		var playerId = shortId.generate();
+		
+		console.log('Signup: ' + login + ', ' + pwd + ', ' + email + ', ' + playerId);
 		
 		accounts.push({ login: login, pwd: pwd, email: email, playerId: playerId });
 		
