@@ -61,9 +61,14 @@
 		
 		console.log('Signup: ' + login + ', ' + pwd + ', ' + email + ', ' + playerId);
 		
-		accounts.push({ login: login, pwd: pwd, email: email, playerId: playerId });
+		accounts.push({ 
+			login: login, 
+			pwd: pwd, 
+			email: email, 
+			playerId: playerId 
+		});
 		
-		res.sendStatus({ login: login, playerId: playerId });
+		res.json({ login: login, playerId: playerId });
 	})
 	
 	app.listen(port, function(){
