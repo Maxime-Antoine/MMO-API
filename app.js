@@ -42,10 +42,10 @@
 	
 	app.get('/username', function(req, res){
 		var result = {};
-		result.name = [];
+		result.names = [];
 		
 		accounts.each(function(a){
-			result.name.push(a.login);
+			result.names.push(a.login);
 		});
 		
 		res.json(result);
