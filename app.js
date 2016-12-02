@@ -23,7 +23,7 @@
 		console.log('Login request for ' + login + ' - ' + pwd);
 		
 		var player = null;
-		accounts.each(function(a){
+		accounts.forEach(function(a){
 			if (a.login == login && a.pwd == pwd)
 				player = a;
 		})
@@ -44,7 +44,7 @@
 		var result = {};
 		result.names = [];
 		
-		accounts.each(function(a){
+		accounts.forEach(function(a){
 			result.names.push(a.login);
 		});
 		
