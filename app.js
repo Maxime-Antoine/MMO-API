@@ -8,7 +8,10 @@
 	app.use(bodyParser.json());
 	
 	//temp memory storage of users accounts
-	var accounts = [ { login: 'Max', pwd: '123', email: 'max@test.com', playerId: 'eWRhpRV' } ];
+	var accounts = [ 
+		{ login: 'Max', pwd: '123', email: 'max@test.com', playerId: 'eWRhpRV' },
+		{ login: 'Max2', pwd: '123', email: 'max@test.com', playerId: 'fWRhpRV'}
+	 ];
 	
 	// -------- Routes --------
 	app.get('/', function(req, res){
