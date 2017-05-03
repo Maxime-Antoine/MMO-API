@@ -33,12 +33,15 @@ app.post('/login', function(req, res){
         userRepository.findByUsername(login, (err, user) => {
             if (err || !user || !user.checkPassword(pwd)){
                 console.log('Login request for ' + login + ' - ' + pwd + ' failed');
+                
                 resContent.result = 'NOK';
                 resContent.reason = 'Incorrect credentials';
             } else {
                 user.login();
-                userRepository.createOrUpdate(user);
+                userRepository.update(user, (err) => { console.log('Cannot update user (for lastLoginDate)'); });
+
                 console.log('Login request for ' + login + ' - ' + pwd + ' succeeded');
+
                 resContent.result = 'OK';
                 resContent.playerId = user.id;
                 resContent.playerName = user.login;
@@ -74,7 +77,7 @@ app.post('/signup', function(req, res){
 
     console.log('Signup: ' + login + ', ' + pwd + ', ' + email + ', ' + user.id);
 
-    userRepository.createOrUpdate(user, (err) => {
+    userRepository.create(user, (err) => {
         if (err)
             return res.json('Cannot create user');
 

@@ -28,18 +28,38 @@ class UserRepository {
                .once('value', (snap) => {
                    let data = snap.val();
                    if (data){
-                       let user = createUserFromDb(username, data[username])
+                       let user = createUserFromDb(username, data)
                        callback(null, user);
                     } else
                         callback(null, null);
                });
     }
 
-    createOrUpdate(user, callback){
+    create(user, callback){
         this.findByUsername(user.username, (err, data) => {
             if (err || data){
                 if (callback)
                     callback('An user already exists with this username');
+            }
+            else {
+                this.db.ref(`users/${user.username}`)
+                       .set({
+                           password: user.password,
+                           email: user.email,
+                           creationDate: user.creationDate,
+                           lastLoginDate: user.lastLoginDate,
+                           characterId: user.characterId
+                       });
+                if(callback) callback();
+            }
+        });
+    }
+
+    update(user, callback){
+        this.findByUsername(user.username, (err, data) => {
+            if (err || !data){
+                if (callback)
+                    callback('User not found');
             }
             else {
                 this.db.ref(`users/${user.username}`)
