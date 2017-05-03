@@ -1,78 +1,83 @@
-var port = process.env.PORT || 3000;
-var app = require('express')();
-var bodyParser = require('body-parser');
-var shortId = require('shortid');
+'use strict';
+
+const port = process.env.PORT || 3000;
+const app = require('express')();
+const bodyParser = require('body-parser');
+const shortId = require('shortid');
+const UserRepository = require('./Account/UserRepository');
+const userRepository = new UserRepository();
+const User = require('./Account/User');
 
 //parse application/json
 app.use(bodyParser.json());
 
-//temp memory storage of users accounts
-var accounts = [ 
-	{ login: 'Max', pwd: '123', email: 'max@test.com', playerId: 'eWRhpRV' },
-	{ login: 'Max2', pwd: '123', email: 'max@test.com', playerId: 'fWRhpRV'}
-];
+app.listen(port, function(){
+    console.log(`express started on port ${port}`);
+});
 
 // -------- Routes --------
 app.get('/', function(req, res){
-	res.send('Nothing here');
-})
+    res.send('Nothing here');
+});
 
 app.post('/login', function(req, res){
-	var login = req.body.login;
-	var pwd = req.body.pwd;
-	var resContent = {};
-	
-	var player = null;
-	accounts.forEach(function(a){
-		if (a.login == login && a.pwd == pwd)
-			player = a;
-	})
-	
-	if (player){
-		console.log('Login request for ' + login + ' - ' + pwd + ' succeeded');
-		resContent.result = 'OK';
-		resContent.playerId = player.playerId;
-		resContent.playerName = player.login;
-	}
-	else {
-		console.log('Login request for ' + login + ' - ' + pwd + 'failed');
-		resContent.result = 'NOK';
-		resContent.reason = 'Incorrect credentials';
-	}
-	res.json(resContent);
-})
+    var login = req.body.login;
+    var pwd = req.body.pwd;
+    var resContent = {};
+
+    if (!login || !pwd) {
+        resContent.error = 'Both login and pwd are required';
+        return res.json(resContent);
+    }
+    else
+        userRepository.findByUsername(login, (err, user) => {
+            if (err || !user || !user.checkPassword(pwd)){
+                console.log('Login request for ' + login + ' - ' + pwd + ' failed');
+                resContent.result = 'NOK';
+                resContent.reason = 'Incorrect credentials';
+            } else {
+                user.login();
+                userRepository.createOrUpdate(user);
+                console.log('Login request for ' + login + ' - ' + pwd + ' succeeded');
+                resContent.result = 'OK';
+                resContent.playerId = user.id;
+                resContent.playerName = user.login;
+            }
+
+            res.json(resContent);
+        });
+});
 
 app.get('/username', function(req, res){
-	var result = {};
-	result.names = [];
-	
-	console.log('Usernames requested');
-	
-	accounts.forEach(function(a){
-		result.names.push(a.login);
-	});
-	
-	res.json(result);
-})
+    console.log('Usernames requested');
 
-app.post('/signup', function(req, res){		
-	var login = req.body.login;
-	var pwd = req.body.pwd;
-	var email = req.body.email;
-	var playerId = shortId.generate();
-	
-	console.log('Signup: ' + login + ', ' + pwd + ', ' + email + ', ' + playerId);
-	
-	accounts.push({ 
-		login: login, 
-		pwd: pwd, 
-		email: email, 
-		playerId: playerId 
-	});
-	
-	res.json({ login: login, playerId: playerId });
-})
+    userRepository.all((err, data) => {
+        var result = {};
+        result.names = [];
 
-app.listen(port, function(){
-	console.log('express started');
-})
+        if (data){
+            data.forEach(function(a){
+                result.names.push(a.username);
+            });
+        }
+
+        res.json(result);
+    });
+});
+
+app.post('/signup', function(req, res){
+    var login = req.body.login;
+    var pwd = req.body.pwd;
+    var email = req.body.email;
+
+    var user = User.create(login, pwd, email);
+
+    console.log('Signup: ' + login + ', ' + pwd + ', ' + email + ', ' + user.id);
+
+    userRepository.createOrUpdate(user, (err) => {
+        if (err)
+            return res.json('Cannot create user');
+
+        res.json({ login: login, playerId: user.characterId });
+    });
+});

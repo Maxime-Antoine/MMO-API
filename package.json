@@ -2,13 +2,13 @@
   "name": "mmo-api",
   "version": "1.0.0",
   "engines": {
-	"node": "^7.2.1",
-	"npm": "^4.2.0"
+    "node": "^7.2.1",
+    "npm": "^4.2.0"
   },
   "description": "REST API for MMO project",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node app"
   },
   "author": "Maxime Antoine",
@@ -16,6 +16,11 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
-    "shortid": "^2.2.6"
+    "shortid": "^2.2.6",
+    "firebase-admin": "^4.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "mocha": "^3.3.0"
   }
 }
